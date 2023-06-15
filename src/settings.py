@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'fileupload',
     'image_upload',
     'financial_management',
+    'event_manager',
 
     'rest_framework_simplejwt.token_blacklist',
     'django_filters'

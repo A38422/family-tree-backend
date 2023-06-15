@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from django.db.models import Count
 
@@ -8,6 +8,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.exceptions import ValidationError
 
 from django_filters import rest_framework as filters
 
@@ -45,7 +48,7 @@ class FamilyTreePagination(PageNumberPagination):
 
 class FamilyTreeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsSuperUserOrReadOnly]
-    queryset = FamilyTree.objects.all().order_by('id')
+    queryset = FamilyTree.objects.all().order_by('-id')
     serializer_class = FamilyTreeSerializer
     pagination_class = FamilyTreePagination
     filter_backends = [SearchFilter, OrderingFilter, filters.DjangoFilterBackend]
@@ -57,10 +60,52 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         if 'query_all' in request.query_params:
             queryset = self.get_queryset()
+
+            queryset = self.filter_queryset(queryset)
+
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
         else:
             return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        user = request.data.pop('user', None)
+        is_admin = request.data.pop('is_admin', False)
+
+        username = user['username'] if user and user['username'] else None
+        password = user['password'] if user and user['password'] else None
+
+        if username and password:
+            try:
+                check_user = User.objects.get(username=username)
+                raise ValidationError('Tài khoản đã tồn tại.')
+            except User.DoesNotExist:
+                try:
+                    validate_password(password)
+                    if is_admin:
+                        user = User.objects.create_superuser(username=username, password=password)
+                    else:
+                        user = User.objects.create_user(username=username, password=password)
+
+                    user = user
+                except Exception as e:
+                    error_message = ', '.join(e.messages)
+                    raise ValidationError(error_message)
+        else:
+            user = None
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        family_tree = serializer.instance
+
+        family_tree.is_admin = is_admin
+        family_tree.user = user
+        family_tree.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class FamilyTreeStatisticsAPIView(APIView):

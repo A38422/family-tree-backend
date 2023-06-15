@@ -16,7 +16,6 @@ class FamilyTree(models.Model):
     fid = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='spouses',
                             db_index=True)
     pids = models.ManyToManyField('self', blank=True, related_name='parents')
-    # relationship = models.CharField(null=True, blank=True, max_length=255)
     gender = models.CharField(max_length=10)
     name = models.CharField(max_length=255)
     img = models.TextField(null=True, blank=True)
@@ -81,23 +80,24 @@ class FamilyTree(models.Model):
         return self.name
 
 
-@receiver(post_save, sender=FamilyTree)
-def create_user_and_assign_role(sender, instance, created, **kwargs):
-    if created:
-        username = f"user{instance.id}"
-        # password = User.objects.make_random_password()
-        password = 'Ab@123456'
-
-        if instance.is_admin:
-            user = User.objects.create_superuser(username=username, password=password)
-        else:
-            user = User.objects.create_user(username=username, password=password)
-
-        instance.user = user
-        instance.save()
-
+# @receiver(post_save, sender=FamilyTree)
+# def create_user_and_assign_role(sender, instance, created, **kwargs):
+#     if created:
+#         username = f"user{instance.id}"
+#         # password = User.objects.make_random_password()
+#         password = 'Ab@123456'
+#
+#         if instance.is_admin:
+#             user = User.objects.create_superuser(username=username, password=password)
+#         else:
+#             user = User.objects.create_user(username=username, password=password)
+#
+#         instance.user = user
+#         instance.save()
+#
 
 @receiver(post_delete, sender=FamilyTree)
 def delete_user(sender, instance, **kwargs):
     if instance.user:
         instance.user.delete()
+

@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('family_tree_manager.urls')),
     path('', include('financial_management.urls')),
+    path('', include('event_manager.urls')),
     path('', include('fileupload.urls')),
     path('', include('image_upload.urls')),
     path('api/login/', views.login_view, name='login'),

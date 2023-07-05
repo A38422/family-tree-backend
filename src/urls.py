@@ -36,3 +36,5 @@ urlpatterns = [
                   path('api/user/change-password/<int:pk>/', views.UserViewSet.as_view({'post': 'change_password'}),
                        name='user-change-password'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

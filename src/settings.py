@@ -29,9 +29,9 @@ SECRET_KEY = 'django-insecure-!w6t+8uvmjvrp#cll1o5+td&f0o6p($ae&kc0v6!l65%m#3x_2
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    # '*',
     '127.0.0.1',
-    '.vercel.app'
+    '.vercel.app',
+    # '.now.sh'
 ]
 
 
@@ -86,7 +86,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    # 'http://localhost:3000',
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -173,7 +173,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Đường dẫn đến thư mục media
-MEDIA_ROOT = os.path.join(BASE_DIR, '')
+MEDIA_ROOT = os.path.join(BASE_DIR / "staticfiles_build" / "media", '')
 
 # URL cho các tệp media
 MEDIA_URL = '/'

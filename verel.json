@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/wsgi.py",
+            "src": "family_tree_manager_backend/wsgi.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
@@ -28,7 +28,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "src/wsgi.py"
+            "dest": "family_tree_manager_backend/wsgi.py"
         }
     ]
 

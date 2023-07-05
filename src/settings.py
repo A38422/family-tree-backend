@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,11 @@ SECRET_KEY = 'django-insecure-!w6t+8uvmjvrp#cll1o5+td&f0o6p($ae&kc0v6!l65%m#3x_2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    '127.0.0.1',
+    '.vercel.app'
+]
 
 
 # Application definition
@@ -118,6 +124,9 @@ DATABASES = {
     }
 }
 
+DATABASE_URL = "postgresql://postgres:IE0KGhjCjuXTNPEbzQiv@containers-us-west-47.railway.app:7849/railway"
+DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -156,6 +165,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

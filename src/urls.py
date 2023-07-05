@@ -17,15 +17,22 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
 from . import views
 
+router = DefaultRouter()
+router.register(r'user', views.UserViewSet)
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('family_tree_manager.urls')),
-    path('', include('financial_management.urls')),
-    path('', include('event_manager.urls')),
-    path('', include('fileupload.urls')),
-    path('', include('image_upload.urls')),
-    path('api/login/', views.login_view, name='login'),
-    path('api/logout/', views.logout_view, name='logout'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('', include('family_tree_manager.urls')),
+                  path('', include('financial_management.urls')),
+                  path('', include('event_manager.urls')),
+                  path('', include('fileupload.urls')),
+                  path('', include('image_upload.urls')),
+                  path('api/login/', views.login_view, name='login'),
+                  path('api/logout/', views.logout_view, name='logout'),
+                  path('api/', include(router.urls)),
+                  path('api/user/change-password/<int:pk>/', views.UserViewSet.as_view({'post': 'change_password'}),
+                       name='user-change-password'),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,3 @@
-from abc import ABC, ABCMeta
-
 from rest_framework import serializers
 from .models import ContributionLevel, Sponsor, Income, ExpenseCategory, Expense
 

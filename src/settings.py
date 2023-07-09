@@ -29,9 +29,9 @@ SECRET_KEY = 'django-insecure-!w6t+8uvmjvrp#cll1o5+td&f0o6p($ae&kc0v6!l65%m#3x_2
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    '.vercel.app',
-    '.now.sh'
+    # '127.0.0.1',
+    # '.vercel.app',
+    # '.now.sh'
 ]
 
 
@@ -86,7 +86,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    # 'http://localhost:3000',
+    'http://localhost:3000',
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -113,9 +113,21 @@ WSGI_APPLICATION = 'src.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Minh2002-',
+#         'HOST': 'localhost',
+#         'POST': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'mapdata',
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'Minh2002-',
@@ -124,8 +136,8 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = "postgresql://postgres:IE0KGhjCjuXTNPEbzQiv@containers-us-west-47.railway.app:7849/railway"
-DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
+# DATABASE_URL = "postgresql://postgres:IE0KGhjCjuXTNPEbzQiv@containers-us-west-47.railway.app:7849/railway"
+# DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
 
 
 # Password validation
@@ -173,7 +185,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Đường dẫn đến thư mục media
-MEDIA_ROOT = os.path.join(BASE_DIR / "staticfiles_build" / "media", '')
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
 # URL cho các tệp media
 MEDIA_URL = '/'

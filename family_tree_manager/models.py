@@ -46,7 +46,10 @@ class FamilyTree(models.Model):
         # self.save_base(*args, **kwargs)
 
         if not self.id:
-            self.id = FamilyTree.objects.order_by('-id').first().id + 1
+            if FamilyTree.objects.order_by('-id').first():
+                self.id = FamilyTree.objects.order_by('-id').first().id + 1
+            else:
+                self.id = 1
 
         if self.mid or self.fid:
             max_generation = \

@@ -1,9 +1,11 @@
 from django.db import models
+from django.db.models import Q
 
 from rest_framework import viewsets, status
 from rest_framework.exceptions import ValidationError
 
 from family_tree_manager.models import FamilyTree
+from family_tree_manager.serializers import FamilyTreeSerializer
 from .models import ContributionLevel, Sponsor, Income, ExpenseCategory, Expense
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .serializers import (
@@ -22,6 +24,14 @@ class IsSuperUserOrReadOnly(BasePermission):
         if request.user.is_superuser:
             return True
 
+        if request.method in SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+
+        return False
+
+
+class IsReadOnly(BasePermission):
+    def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return request.user and request.user.is_authenticated
 
@@ -274,6 +284,33 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         instance.save()
 
         return Response(serializer.data)
+
+
+class UnpaidMemberViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsReadOnly]
+    queryset = FamilyTree.objects.all()
+    serializer_class = FamilyTreeSerializer
+    pagination_class = BasePagination
+    search_fields = ['name']
+
+    def list(self, request, *args, **kwargs):
+        contribution_level_year = request.query_params.get('contribution_level_year')
+        search = request.query_params.get('search', '')
+        if contribution_level_year:
+            data = []
+            query_set = FamilyTree.objects.filter(Q(name__icontains=search))
+            for family_tree in query_set:
+                if not Income.objects.filter(member_id=family_tree.id, contributor__year=contribution_level_year):
+                    data.append(family_tree)
+
+            page = self.paginate_queryset(data)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(page, many=True)
+            return Response(serializer.data)
+        raise ValidationError("Must have param contribution_level_year")
 
 
 class ReportViewSet(viewsets.ViewSet):
